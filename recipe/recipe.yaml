@@ -1,27 +1,29 @@
-{% set name = "torchmd" %}
-{% set version = "1.0.2" %}
+schema_version: 1
 
+context:
+  name: torchmd
+  version: 1.0.2
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: ${{ name|lower }}
+  version: ${{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/torchmd-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/${{ name[0] }}/${{ name }}/torchmd-${{ version }}.tar.gz
   sha256: 30d6898fea4cd53ad92b29834fec168802e3056fb654ca316d50d75daa3060a3
 
 build:
-  number: 0
+  number: 1
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python ${{ python_min }}.*
     - versioneer
   run:
-    - python >=3.6
+    - python >=${{ python_min }}
     - pyyaml
     - scipy
     - pytorch
@@ -31,19 +33,18 @@ requirements:
     - pandas
     - tqdm
 
-test:
-  imports:
-    - torchmd
-    - torchmd.forcefields
-  commands:
-    - pip check
-  requires:
-    - pip
+tests:
+  - python:
+      imports:
+        - torchmd
+        - torchmd.forcefields
+      pip_check: true
+      python_version:
+        - ${{ python_min }}
+        - "*"
 
 about:
-  home: http://www.torchmd.org/
   license: MIT
-  license_family: MIT
   license_file: LICENSE.md
   summary: End-To-End Molecular Dynamics (MD) Engine using PyTorch
   description: |
@@ -52,8 +53,9 @@ about:
     rapidly do research in force-field development as well as integrate
     seamlessly neural network potentials into the dynamics, with the
     simplicity and power of PyTorch.
-  doc_url: http://www.torchmd.org/
-  dev_url: https://github.com/torchmd/torchmd/
+  homepage: http://www.torchmd.org/
+  repository: https://github.com/torchmd/torchmd/
+  documentation: http://www.torchmd.org/
 
 extra:
   recipe-maintainers:
